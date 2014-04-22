@@ -1,0 +1,48 @@
+Created by Matthew Garcia
+
+4   hr research
+.5  hr writing a DFA
+4   hr coding
+1.5 hr refining code
+2   hr writing test
+2   hr writing documentation and commenting
+
+TOTAL HOURS: 14
+
+
+
+The Gaiki challenge consists of two parts.
+Part 1 requested that I expose a method that can return a list of all the jobs 
+on the Gaiki career website in the form a an array of json objects.
+
+In order to use the method you must make a new GaikiParser object, passing in 
+the URL to the Gaiki Career website. Than you simply make a call the the 
+getJsonArray() method
+
+	example:
+		g_parser = GaikiParser("http://www.gaikai.com/careers")
+		output = g_parser.getJsonArray()		
+
+
+Part two of the challenge requested that I create a REST api that can return all jobs as an array of json objects or return a specific job. I have included a basic server that runs on your local machine. In a separate terminal, the UnitTester script can be run in order to demonstrate that the functionality specified works. It must be noted that when looking for a specific job, if that specific job is not found, then an array json objects of similar jobs will be returned. The functionality described is also demonstrated in the
+unit tester. 
+
+In order in incorperate the Gaiki jobs parser into your RESTful service, all one has to do
+is create a new GaikiParser object and then perform a call to the getRequest(path) function within the portion of your service that handles HTTP GET requests. It must be noted that the "path" must contain /jobs or /jobs/somejob in order to function. In order to test locally, the function does not check for malformed URL's, but I have added a comment in the code for clarity. The function will return an array json objects of all the jobs if "/jobs" is requested. Furthermore, the function will return a specified job as a json object if "jobs/specifiedJob" is called and if that job is not found, a list of similar matches will be returned as an array of json objects. If no matches are found, then the function will return "Specified job not found.".
+	
+ Example:
+	class Server(BaseHTTPRequestHandler):
+   		g_parser = GaikiParser("http://www.gaikai.com/careers")
+    		
+		def do_GET(self):
+       
+        		headers = { 'application/json', 'text/plain'}
+        		self.send_response(200)
+        		self.send_header('application/json', 'text/plain')
+        		self.end_headers()
+        		try:
+        		    self.wfile.write(self.g_parser.getRequest(self.path))
+       			except IOError,e:
+        		    if e.errno == errno.EPIPE:
+         		       print "Client has closed the socket"
+
